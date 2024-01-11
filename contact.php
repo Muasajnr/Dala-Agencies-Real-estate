@@ -1,31 +1,46 @@
 <?php
 include 'config_db.php';
 
-$full_name = isset($_POST['full_name']) ? $_POST['full_name'] : '';
-$email_address = isset($_POST['email_address']) ? $_POST['email_address'] : '';
-$contact_number = isset($_POST['contact_number']) ? $_POST['contact_number'] : '';
-$message = isset($_POST['message']) ? $_POST['message'] : '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Form is submitted
+    $full_name = isset($_POST['full_name']) ? $_POST['full_name'] : '';
+    $email_address = isset($_POST['email_address']) ? $_POST['email_address'] : '';
+    $contact_number = isset($_POST['contact_number']) ? $_POST['contact_number'] : '';
+    $message = isset($_POST['message']) ? $_POST['message'] : '';
 
-// Establish the database connection
-$conn = new mysqli("localhost", "root", "", "dala");
+    // Establish the database connection
+    $conn = new mysqli("localhost", "root", "", "dala");
 
-// Check the connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    // Check the connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Validate and sanitize input
+    $full_name = mysqli_real_escape_string($conn, $full_name);
+    $email_address = mysqli_real_escape_string($conn, $email_address);
+    $contact_number = mysqli_real_escape_string($conn, $contact_number);
+    $message = mysqli_real_escape_string($conn, $message);
+
+    // Check if required fields are not empty
+    if (!empty($full_name) && !empty($email_address) && !empty($contact_number) && !empty($message)) {
+        // Insert into the database
+        $sql = "INSERT INTO contact_us (full_name, email_address, contact_number, message)
+                VALUES ('$full_name', '$email_address', '$contact_number', '$message')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "Message sent successfully";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    } else {
+        echo "Error: All fields are required";
+    }
+
+    $conn->close();
 }
-
-$sql = "INSERT INTO contact_us (full_name, email_address, contact_number, message)
-VALUES ('$full_name', '$email_address', '$contact_number', '$message')";
-
-if ($conn->query($sql) === TRUE) {
-    
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}
-
-
-$conn->close();
 ?>
+
 
 
 <?php include'header.php';?>

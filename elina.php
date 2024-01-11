@@ -1,32 +1,48 @@
 <?php
 include 'config_db.php';
 
-$full_name = isset($_POST['full_name']) ? $_POST['full_name'] : '';
-$email_address = isset($_POST['user_email']) ? $_POST['user_email'] : '';
-$contact_number = isset($_POST['user_number']) ? $_POST['user_number'] : '';
-$user_property = isset($_POST['user_property']) ? $_POST['user_property'] : '';
-$message = isset($_POST['message']) ? $_POST['message'] : '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Form is submitted
+    $full_name = isset($_POST['full_name']) ? $_POST['full_name'] : '';
+    $email_address = isset($_POST['user_email']) ? $_POST['user_email'] : '';
+    $contact_number = isset($_POST['user_number']) ? $_POST['user_number'] : '';
+    $user_property = isset($_POST['user_property']) ? $_POST['user_property'] : '';
+    $message = isset($_POST['message']) ? $_POST['message'] : '';
 
-// Establish the database connection
-$conn = new mysqli("localhost", "root", "", "dala");
+    // Establish the database connection
+    $conn = new mysqli("localhost", "root", "", "dala");
 
-// Check the connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    // Check the connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Validate and sanitize input
+    $full_name = mysqli_real_escape_string($conn, $full_name);
+    $email_address = mysqli_real_escape_string($conn, $email_address);
+    $contact_number = mysqli_real_escape_string($conn, $contact_number);
+    $user_property = mysqli_real_escape_string($conn, $user_property);
+    $message = mysqli_real_escape_string($conn, $message);
+
+    // Check if required fields are not empty
+    if (!empty($full_name) && !empty($email_address) && !empty($contact_number) && !empty($user_property) && !empty($message)) {
+        // Insert into the database
+        $sql = "INSERT INTO messages (full_name, user_email, user_number, user_property, message)
+                VALUES ('$full_name', '$email_address', '$contact_number','$user_property', '$message')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "Message sent successfully";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    } else {
+        echo "Error: All fields are required";
+    }
+
+    $conn->close();
 }
-
-$sql = "INSERT INTO messages (full_name, user_email, user_number,user_property, message)
-VALUES ('$full_name', '$email_address', '$contact_number','$user_property', '$message')";
-
-if ($conn->query($sql) === TRUE) {
-    
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}
-
-
-$conn->close();
 ?>
+
 
 <?php include'header.php';?>
 <!-- banner -->
