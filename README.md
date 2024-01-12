@@ -39,4 +39,4 @@ Entails of
 
 
   # Enjoy Using Dala Agencies Real Estate. Be free to contribute.
-  <a href=index.php>Visit Site</a>
+
