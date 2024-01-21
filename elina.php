@@ -93,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 
-
 <div class="advertisement">
   <h4>Advertisements</h4>
   <img src="images/properties/sale7buy.jpg" class="img-responsive" alt="advertisement">
